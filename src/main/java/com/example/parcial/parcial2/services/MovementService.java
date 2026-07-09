@@ -51,7 +51,18 @@ public class MovementService {
                 book.setAvailable(false);
             }
         } else {
+
+            long timesBorrwed = movementRepository.CountMovementsByLectorAndBookAndType(lector, book, MovementType.BORROWING);
+            long timesReturned = movementRepository.CountMovementsByLectorAndBookAndType(lector, book, MovementType.RETURN);
+
+            if (timesBorrwed - timesReturned != 1) {
+                throw new RuntimeException("Return movement failed");
+            }
+
             book.setAvailableCount(book.getAvailableCount() + 1);
+            if (book.getAvailableCount() > 0) {
+                book.setAvailable(true);
+            }
         }
 
         bookRepository.save(book);
